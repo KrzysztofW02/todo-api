@@ -7,6 +7,6 @@ namespace todo_api.Models
     {
         public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options) { }
 
-        public DbSet<TodoItem> Tasks { get; set; }
+        public DbSet<TodoItem> TodoItems { get; set; }
     }
 }
