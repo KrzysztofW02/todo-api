@@ -1,6 +1,8 @@
 using System.Reflection;
 using todo_api.Repositories;
 using todo_api.Services;
+using todo_api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace todo_api
 {
@@ -26,7 +28,16 @@ namespace todo_api
             builder.Services.AddScoped<ITodoRepository, TodoRepository>();
             builder.Services.AddScoped<ITodoService, TodoService>();
 
+            builder.Services.AddDbContext<TodoDbContext>(opt =>
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
+                db.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
