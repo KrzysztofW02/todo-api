@@ -28,13 +28,18 @@ namespace todo_api
             builder.Services.AddScoped<ITodoRepository, TodoRepository>();
             builder.Services.AddScoped<ITodoService, TodoService>();
 
-            builder.Services.AddDbContext<TodoDbContext>(opt =>
-                opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            var env = builder.Environment;
+            if (!env.IsEnvironment("Testing"))
+            {
+                builder.Services.AddDbContext<TodoDbContext>(opt =>
+                    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            }
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
+            if (!env.IsEnvironment("Testing"))
             {
+                using var scope = app.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
                 db.Database.Migrate();
             }
