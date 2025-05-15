@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using todo_api.DTOs;
 using todo_api.Services;
 
@@ -112,7 +113,7 @@ namespace todo_api.Controllers
         /// <param name="percent">New percent value (0–100).</param>
         /// <returns>204 No Content if succeeded; 404 Not Found otherwise.</returns>
         [HttpPatch("{id}/percent/{percent}")]
-        public async Task<IActionResult> SetPercent(int id, int percent)
+        public async Task<IActionResult> SetPercent(int id, [Range(0, 100)] int percent)
         {
             var ok = await _service.SetPercentCompleteAsync(id, percent);
             if (!ok)
